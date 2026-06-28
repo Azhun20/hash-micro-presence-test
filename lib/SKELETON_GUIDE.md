@@ -31,13 +31,13 @@ Panduan lengkap untuk menggunakan dan mengembangkan aplikasi dengan skeleton ini
 
 3. **Install dependencies**
    ```bash
-   flutter pub get
-   flutter pub run build_runner build --delete-conflicting-outputs
+   fvm flutter pub get
+   fvm flutter pub run build_runner build --delete-conflicting-outputs
    ```
 
 4. **Run the app**
    ```bash
-   flutter run
+   fvm flutter run
    ```
 
 ---
@@ -53,7 +53,7 @@ features/your_feature/
 ├── di/                          # Dependency Injection
 │   └── your_feature_di.dart
 ├── domain/                      # Business Logic Layer
-│   ├── entities/                # Business objects (Freezed)
+│   ├── entities/                # Business objects (Equatable)
 │   ├── repositories/            # Repository interfaces
 │   └── usecases/                # Use cases
 ├── data/                        # Data Layer
@@ -81,19 +81,41 @@ mkdir -p lib/features/my_feature/{di,domain/{entities,repositories,usecases},dat
 #### 2. Domain Layer
 
 **Entity** (`domain/entities/my_entity.dart`):
+
+Entity menggunakan **Equatable** (bukan Freezed). Tidak perlu `build_runner` untuk entity —
+cukup tulis manual. Sertakan semua field di `props` agar value-equality berfungsi, dan
+sediakan `copyWith` bila perlu update immutable di layer presentation.
+
 ```dart
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 
-part 'my_entity.freezed.dart';
+class MyEntity extends Equatable {
+  final String id;
+  final String name;
 
-@freezed
-class MyEntity with _$MyEntity {
-  const factory MyEntity({
-    required String id,
-    required String name,
-  }) = _MyEntity;
+  const MyEntity({
+    required this.id,
+    required this.name,
+  });
+
+  MyEntity copyWith({
+    String? id,
+    String? name,
+  }) {
+    return MyEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, name];
 }
 ```
+
+> **Catatan:** hanya **entity** yang pakai Equatable. **Model** (data layer) tetap pakai
+> `json_serializable` (+ Freezed bila perlu) untuk serialisasi JSON, dan **State** (presentation)
+> tetap pakai Freezed untuk `copyWith` + `@Default`.
 
 **Repository Interface** (`domain/repositories/my_repository.dart`):
 ```dart
