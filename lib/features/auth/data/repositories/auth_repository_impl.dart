@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:hash_micro_presence_test/core/error/failure.dart';
+import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_credential_datasource.dart';
 import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_local_datasource.dart';
-import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:hash_micro_presence_test/features/auth/data/models/user_model.dart';
 import 'package:hash_micro_presence_test/features/auth/domain/entities/user_entity.dart';
 import 'package:hash_micro_presence_test/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
+  final AuthCredentialDataSource credentialDataSource;
   final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImpl(this.remoteDataSource, this.localDataSource);
+  AuthRepositoryImpl(this.credentialDataSource, this.localDataSource);
 
   @override
   Future<Either<Failure, UserEntity>> login(
@@ -18,13 +18,15 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
-      final response = await remoteDataSource.login(email, password);
-      final user = UserModel.fromJson(response['user']);
-      final token = response['token'] as String;
-      final refreshToken = response['refresh_token'] as String;
+      // Validate against local hardcoded accounts (no backend).
+      final userJson = credentialDataSource.authenticate(email, password);
+      final user = UserModel.fromJson(userJson);
 
-      await localDataSource.saveUser(response['user']);
-      await localDataSource.saveTokens(token, refreshToken);
+      // Issue a simple local session token so checkAuthStatus() keeps working.
+      final token = 'local-${user.id}-${DateTime.now().millisecondsSinceEpoch}';
+
+      await localDataSource.saveUser(userJson);
+      await localDataSource.saveTokens(token, token);
 
       return Right(user.toEntity());
     } catch (e, stackTrace) {
@@ -35,7 +37,6 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, void>> logout() async {
     try {
-      await remoteDataSource.logout();
       await localDataSource.clearAuth();
       return const Right(null);
     } catch (e, stackTrace) {

@@ -28,6 +28,8 @@ mixin _$UserModel {
   String? get email => throw _privateConstructorUsedError;
   @JsonKey(name: "avatar")
   String? get avatar => throw _privateConstructorUsedError;
+  @JsonKey(name: "role")
+  String? get role => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,7 +46,8 @@ abstract class $UserModelCopyWith<$Res> {
       {@JsonKey(name: "id") String? id,
       @JsonKey(name: "name") String? name,
       @JsonKey(name: "email") String? email,
-      @JsonKey(name: "avatar") String? avatar});
+      @JsonKey(name: "avatar") String? avatar,
+      @JsonKey(name: "role") String? role});
 }
 
 /// @nodoc
@@ -64,6 +67,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? name = freezed,
     Object? email = freezed,
     Object? avatar = freezed,
+    Object? role = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -82,6 +86,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
+      role: freezed == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -98,7 +106,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       {@JsonKey(name: "id") String? id,
       @JsonKey(name: "name") String? name,
       @JsonKey(name: "email") String? email,
-      @JsonKey(name: "avatar") String? avatar});
+      @JsonKey(name: "avatar") String? avatar,
+      @JsonKey(name: "role") String? role});
 }
 
 /// @nodoc
@@ -116,6 +125,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? name = freezed,
     Object? email = freezed,
     Object? avatar = freezed,
+    Object? role = freezed,
   }) {
     return _then(_$UserModelImpl(
       id: freezed == id
@@ -134,6 +144,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
+      role: freezed == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -145,7 +159,8 @@ class _$UserModelImpl extends _UserModel {
       {@JsonKey(name: "id") this.id,
       @JsonKey(name: "name") this.name,
       @JsonKey(name: "email") this.email,
-      @JsonKey(name: "avatar") this.avatar})
+      @JsonKey(name: "avatar") this.avatar,
+      @JsonKey(name: "role") this.role})
       : super._();
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -163,10 +178,13 @@ class _$UserModelImpl extends _UserModel {
   @override
   @JsonKey(name: "avatar")
   final String? avatar;
+  @override
+  @JsonKey(name: "role")
+  final String? role;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, email: $email, avatar: $avatar)';
+    return 'UserModel(id: $id, name: $name, email: $email, avatar: $avatar, role: $role)';
   }
 
   @override
@@ -177,12 +195,13 @@ class _$UserModelImpl extends _UserModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
-            (identical(other.avatar, avatar) || other.avatar == avatar));
+            (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.role, role) || other.role == role));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, email, avatar);
+  int get hashCode => Object.hash(runtimeType, id, name, email, avatar, role);
 
   @JsonKey(ignore: true)
   @override
@@ -203,7 +222,8 @@ abstract class _UserModel extends UserModel {
       {@JsonKey(name: "id") final String? id,
       @JsonKey(name: "name") final String? name,
       @JsonKey(name: "email") final String? email,
-      @JsonKey(name: "avatar") final String? avatar}) = _$UserModelImpl;
+      @JsonKey(name: "avatar") final String? avatar,
+      @JsonKey(name: "role") final String? role}) = _$UserModelImpl;
   const _UserModel._() : super._();
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -221,6 +241,9 @@ abstract class _UserModel extends UserModel {
   @override
   @JsonKey(name: "avatar")
   String? get avatar;
+  @override
+  @JsonKey(name: "role")
+  String? get role;
   @override
   @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>

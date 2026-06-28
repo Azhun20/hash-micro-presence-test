@@ -1,24 +1,29 @@
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hash_micro_presence_test/constants/hive_constant.dart';
 import 'package:hash_micro_presence_test/core/logging/app_logger.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 /// Service for managing local storage using Hive
 class HiveService {
   Box? _authBox;
-  Box? _settingsBox;
+  Box? _locationBox;
 
   /// Initialize Hive and open boxes
   Future<void> initHive() async {
     try {
       await Hive.initFlutter();
       _authBox = await Hive.openBox(HiveConstant.authBox);
-      _settingsBox = await Hive.openBox(HiveConstant.settingsBox);
+      await Hive.openBox(HiveConstant.settingsBox);
+      _locationBox = await Hive.openBox(HiveConstant.locationBox);
       AppLogger.info('Hive initialized successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to initialize Hive', e, stackTrace);
       rethrow;
     }
   }
+
+  /// Master-data box for saved locations. Persists across logout (not cleared
+  /// by [clearAuth]).
+  Box get locationBox => _locationBox!;
 
   /// Get a value from auth box
   T? get<T>(String key) {
@@ -31,7 +36,7 @@ class HiveService {
   }
 
   /// Save a value to auth box
-  Future<void> put(String key, dynamic value) async {
+  Future<void> put(String key, Object? value) async {
     try {
       await _authBox?.put(key, value);
     } catch (e) {

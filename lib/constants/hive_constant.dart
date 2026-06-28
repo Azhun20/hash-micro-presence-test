@@ -5,6 +5,7 @@ class HiveConstant {
   // Box names
   static const String authBox = 'auth_box';
   static const String settingsBox = 'settings_box';
+  static const String locationBox = 'location_box';
 
   // Keys
   static const String tokenKey = 'token';

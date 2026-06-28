@@ -16,7 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AuthState {
-  bool get isLoading => throw _privateConstructorUsedError;
+  bool get isLoading =>
+      throw _privateConstructorUsedError; // True once the initial session check has finished. Until then the router
+// shows a splash instead of guessing (prevents a login/home redirect loop).
+  bool get isInitialized => throw _privateConstructorUsedError;
   bool get isAuthenticated => throw _privateConstructorUsedError;
   UserEntity? get user => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
@@ -33,6 +36,7 @@ abstract class $AuthStateCopyWith<$Res> {
   @useResult
   $Res call(
       {bool isLoading,
+      bool isInitialized,
       bool isAuthenticated,
       UserEntity? user,
       String? errorMessage});
@@ -52,6 +56,7 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
   @override
   $Res call({
     Object? isLoading = null,
+    Object? isInitialized = null,
     Object? isAuthenticated = null,
     Object? user = freezed,
     Object? errorMessage = freezed,
@@ -60,6 +65,10 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isInitialized: null == isInitialized
+          ? _value.isInitialized
+          : isInitialized // ignore: cast_nullable_to_non_nullable
               as bool,
       isAuthenticated: null == isAuthenticated
           ? _value.isAuthenticated
@@ -87,6 +96,7 @@ abstract class _$$AuthStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {bool isLoading,
+      bool isInitialized,
       bool isAuthenticated,
       UserEntity? user,
       String? errorMessage});
@@ -104,6 +114,7 @@ class __$$AuthStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? isLoading = null,
+    Object? isInitialized = null,
     Object? isAuthenticated = null,
     Object? user = freezed,
     Object? errorMessage = freezed,
@@ -112,6 +123,10 @@ class __$$AuthStateImplCopyWithImpl<$Res>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isInitialized: null == isInitialized
+          ? _value.isInitialized
+          : isInitialized // ignore: cast_nullable_to_non_nullable
               as bool,
       isAuthenticated: null == isAuthenticated
           ? _value.isAuthenticated
@@ -134,6 +149,7 @@ class __$$AuthStateImplCopyWithImpl<$Res>
 class _$AuthStateImpl implements _AuthState {
   const _$AuthStateImpl(
       {this.isLoading = false,
+      this.isInitialized = false,
       this.isAuthenticated = false,
       this.user,
       this.errorMessage});
@@ -141,6 +157,11 @@ class _$AuthStateImpl implements _AuthState {
   @override
   @JsonKey()
   final bool isLoading;
+// True once the initial session check has finished. Until then the router
+// shows a splash instead of guessing (prevents a login/home redirect loop).
+  @override
+  @JsonKey()
+  final bool isInitialized;
   @override
   @JsonKey()
   final bool isAuthenticated;
@@ -151,7 +172,7 @@ class _$AuthStateImpl implements _AuthState {
 
   @override
   String toString() {
-    return 'AuthState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, user: $user, errorMessage: $errorMessage)';
+    return 'AuthState(isLoading: $isLoading, isInitialized: $isInitialized, isAuthenticated: $isAuthenticated, user: $user, errorMessage: $errorMessage)';
   }
 
   @override
@@ -161,6 +182,8 @@ class _$AuthStateImpl implements _AuthState {
             other is _$AuthStateImpl &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.isInitialized, isInitialized) ||
+                other.isInitialized == isInitialized) &&
             (identical(other.isAuthenticated, isAuthenticated) ||
                 other.isAuthenticated == isAuthenticated) &&
             (identical(other.user, user) || other.user == user) &&
@@ -169,8 +192,8 @@ class _$AuthStateImpl implements _AuthState {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, isAuthenticated, user, errorMessage);
+  int get hashCode => Object.hash(runtimeType, isLoading, isInitialized,
+      isAuthenticated, user, errorMessage);
 
   @JsonKey(ignore: true)
   @override
@@ -182,12 +205,16 @@ class _$AuthStateImpl implements _AuthState {
 abstract class _AuthState implements AuthState {
   const factory _AuthState(
       {final bool isLoading,
+      final bool isInitialized,
       final bool isAuthenticated,
       final UserEntity? user,
       final String? errorMessage}) = _$AuthStateImpl;
 
   @override
   bool get isLoading;
+  @override // True once the initial session check has finished. Until then the router
+// shows a splash instead of guessing (prevents a login/home redirect loop).
+  bool get isInitialized;
   @override
   bool get isAuthenticated;
   @override

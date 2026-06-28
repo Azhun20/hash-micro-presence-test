@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hash_micro_presence_test/configs/routes/route.dart';
 import 'package:hash_micro_presence_test/core/extensions/context_extensions.dart';
 import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:hash_micro_presence_test/shared/styles/app_font_style.dart';
+import 'package:hash_micro_presence_test/utils/extensions/theme_context_extension.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,53 +38,78 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      backgroundColor: context.colorScheme.surface,
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state.isAuthenticated) {
-            context.go(Routes.dashboard);
-          }
+          // Navigation on success is handled by the router's role-based guard.
           if (state.errorMessage != null) {
             context.showErrorSnackBar(state.errorMessage!);
           }
         },
         builder: (context, state) {
           return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               child: Form(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Center(
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: context.primary500,
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: context.primary500.withValues(alpha: 0.3),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.location_on_rounded,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Text(
-                      'Welcome Back',
-                      style: AppFontStyle.display1Bold,
+                      'Selamat Datang',
+                      style: AppFontStyle.display1Bold.copyWith(
+                        color: context.neutral900,
+                        letterSpacing: -0.5,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Login to your account',
+                      'Masuk untuk mengelola lokasi & absensi',
                       style: AppFontStyle.body2Regular.copyWith(
-                        color: context.colorScheme.onSurface.withOpacity(0.6),
+                        color: context.neutral300,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 40),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'Email',
+                        hintText: 'nama@perusahaan.com',
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return 'Masukkan email Anda';
                         }
                         if (!value.contains('@')) {
-                          return 'Please enter a valid email';
+                          return 'Format email tidak valid';
                         }
                         return null;
                       },
@@ -95,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'Kata Sandi',
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -112,10 +136,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Masukkan kata sandi Anda';
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return 'Kata sandi minimal 6 karakter';
                         }
                         return null;
                       },
@@ -132,7 +156,14 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Login'),
+                          : const Text('Masuk'),
+                    ),
+                    const SizedBox(height: 24),
+                    _DemoCredentialsHint(
+                      onPick: (email, password) {
+                        _emailController.text = email;
+                        _passwordController.text = password;
+                      },
                     ),
                   ],
                 ),
@@ -140,6 +171,113 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Tappable demo accounts so the local credentials are discoverable.
+class _DemoCredentialsHint extends StatelessWidget {
+  const _DemoCredentialsHint({required this.onPick});
+
+  final void Function(String email, String password) onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.info50,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.info100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline_rounded, size: 16, color: context.info700),
+              const SizedBox(width: 6),
+              Text(
+                'Akun demo · ketuk untuk mengisi',
+                style: AppFontStyle.caption2SemiBold.copyWith(
+                  color: context.info700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _CredentialRow(
+            label: 'Admin',
+            email: 'admin@app.com',
+            password: 'admin123',
+            onPick: onPick,
+          ),
+          const SizedBox(height: 6),
+          _CredentialRow(
+            label: 'User',
+            email: 'user@app.com',
+            password: 'user123',
+            onPick: onPick,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CredentialRow extends StatelessWidget {
+  const _CredentialRow({
+    required this.label,
+    required this.email,
+    required this.password,
+    required this.onPick,
+  });
+
+  final String label;
+  final String email;
+  final String password;
+  final void Function(String email, String password) onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onPick(email, password),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: context.neutral0,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: context.info100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: context.primary50,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                label,
+                style: AppFontStyle.caption2SemiBold.copyWith(
+                  color: context.primary600,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '$email · $password',
+                style: AppFontStyle.body2Regular.copyWith(
+                  color: context.neutral400,
+                ),
+              ),
+            ),
+            Icon(Icons.touch_app_outlined, size: 16, color: context.neutral200),
+          ],
+        ),
       ),
     );
   }
