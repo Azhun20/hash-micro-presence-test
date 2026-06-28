@@ -13,12 +13,19 @@ class UserModel with _$UserModel {
     @JsonKey(name: "name") String? name,
     @JsonKey(name: "email") String? email,
     @JsonKey(name: "avatar") String? avatar,
+    @JsonKey(name: "role") String? role,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
   UserEntity toEntity() {
-    return UserEntity(id: id, name: name, email: email, avatar: avatar);
+    return UserEntity(
+      id: id,
+      name: name,
+      email: email,
+      avatar: avatar,
+      role: UserRole.fromValue(role),
+    );
   }
 }

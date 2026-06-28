@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_credential_datasource.dart';
 import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:hash_micro_presence_test/features/auth/data/repositories/auth_repository_impl.dart';
@@ -16,14 +17,17 @@ class AuthDI {
     sl.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl(sl<ApiService>()),
     );
+    sl.registerLazySingleton<AuthCredentialDataSource>(
+      () => AuthCredentialDataSourceImpl(),
+    );
     sl.registerLazySingleton<AuthLocalDataSource>(
       () => AuthLocalDataSourceImpl(sl<HiveService>()),
     );
 
-    // Repository
+    // Repository — login uses local hardcoded credentials.
     sl.registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(
-        sl<AuthRemoteDataSource>(),
+        sl<AuthCredentialDataSource>(),
         sl<AuthLocalDataSource>(),
       ),
     );

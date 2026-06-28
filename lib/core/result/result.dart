@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// A Result type for better error handling without exceptions.
 ///
 /// Example usage:
@@ -11,6 +13,7 @@
 ///   }
 /// }
 /// ```
+@immutable
 sealed class Result<T> {
   const Result();
 

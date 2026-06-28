@@ -7,6 +7,7 @@ class ApiService {
   late final Dio _dio;
   final HiveService _hiveService;
   Function? _unauthorizedHandler;
+  // ignore: unused_field
   Function? _refreshTokenCallback;
 
   ApiService(this._hiveService) {

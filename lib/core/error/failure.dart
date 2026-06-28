@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// Represents a failure that can occur during an operation.
 abstract class Failure extends Equatable {
@@ -44,11 +45,51 @@ class UnexpectedFailure extends Failure {
   });
 }
 
+/// Failure for authentication problems (e.g. invalid credentials).
+class AuthFailure extends Failure {
+  const AuthFailure({required super.message, super.cause, super.stackTrace});
+}
+
+/// Failure originating from device location: GPS off or permission denied.
+class LocationFailure extends Failure {
+  const LocationFailure({
+    required super.message,
+    this.isPermanentlyDenied = false,
+    super.cause,
+    super.stackTrace,
+  });
+
+  /// True when permission is permanently denied — UI should offer "open settings".
+  final bool isPermanentlyDenied;
+
+  @override
+  List<Object?> get props => <Object?>[message, cause, isPermanentlyDenied];
+}
+
 const _defaultFailureMessage = 'Terjadi Kesalahan';
 
 /// Convert known exceptions into strongly typed [Failure] instances.
 Failure mapExceptionToFailure(Object error, [StackTrace? stackTrace]) {
   if (error is Failure) return error;
+
+  if (error is LocationServiceDisabledException) {
+    return LocationFailure(
+      message: 'Layanan lokasi (GPS) tidak aktif. Aktifkan terlebih dahulu.',
+      cause: error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  if (error is PermissionDeniedException) {
+    final permanentlyDenied =
+        error.message?.toLowerCase().contains('permanen') ?? false;
+    return LocationFailure(
+      message: error.message ?? 'Izin lokasi ditolak.',
+      isPermanentlyDenied: permanentlyDenied,
+      cause: error,
+      stackTrace: stackTrace,
+    );
+  }
 
   if (error is DioException) {
     final responseMessage = _extractDioMessage(error);

@@ -29,13 +29,19 @@ class AuthCubit extends Cubit<AuthState> {
       (failure) {
         AppLogger.error('Check auth status failed', failure.message);
         emit(
-          state.copyWith(isLoading: false, isAuthenticated: false, user: null),
+          state.copyWith(
+            isLoading: false,
+            isInitialized: true,
+            isAuthenticated: false,
+            user: null,
+          ),
         );
       },
       (user) {
         emit(
           state.copyWith(
             isLoading: false,
+            isInitialized: true,
             isAuthenticated: user != null,
             user: user,
           ),
@@ -80,7 +86,7 @@ class AuthCubit extends Cubit<AuthState> {
       },
       (_) {
         AppLogger.auth('Logout successful');
-        emit(const AuthState(isAuthenticated: false));
+        emit(const AuthState(isInitialized: true));
       },
     );
   }

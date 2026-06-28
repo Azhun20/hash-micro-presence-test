@@ -27,7 +27,11 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Map<String, dynamic>? getUser() {
-    return hiveService.get<Map<String, dynamic>>(HiveConstant.userKey);
+    // Hive returns Map<dynamic, dynamic>; rebuild it with string keys so the
+    // direct cast to Map<String, dynamic> doesn't throw.
+    final raw = hiveService.get<Map<dynamic, dynamic>>(HiveConstant.userKey);
+    if (raw == null) return null;
+    return Map<String, dynamic>.from(raw);
   }
 
   @override
