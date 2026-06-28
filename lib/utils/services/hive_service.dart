@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class HiveService {
   Box? _authBox;
   Box? _locationBox;
+  Box? _attendanceBox;
 
   /// Initialize Hive and open boxes
   Future<void> initHive() async {
@@ -14,6 +15,7 @@ class HiveService {
       _authBox = await Hive.openBox(HiveConstant.authBox);
       await Hive.openBox(HiveConstant.settingsBox);
       _locationBox = await Hive.openBox(HiveConstant.locationBox);
+      _attendanceBox = await Hive.openBox(HiveConstant.attendanceBox);
       AppLogger.info('Hive initialized successfully');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to initialize Hive', e, stackTrace);
@@ -24,6 +26,9 @@ class HiveService {
   /// Master-data box for saved locations. Persists across logout (not cleared
   /// by [clearAuth]).
   Box get locationBox => _locationBox!;
+
+  /// Box for attendance history. Persists across logout.
+  Box get attendanceBox => _attendanceBox!;
 
   /// Get a value from auth box
   T? get<T>(String key) {

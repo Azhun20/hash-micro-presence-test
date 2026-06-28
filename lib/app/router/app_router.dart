@@ -5,7 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hash_micro_presence_test/configs/routes/route.dart';
 import 'package:hash_micro_presence_test/core/di/service_locator.dart';
-import 'package:hash_micro_presence_test/features/attendance/presentation/views/attendance_placeholder_page.dart';
+import 'package:hash_micro_presence_test/features/attendance/presentation/cubit/attendance_cubit.dart';
+import 'package:hash_micro_presence_test/features/attendance/presentation/cubit/attendance_history_cubit.dart';
+import 'package:hash_micro_presence_test/features/attendance/presentation/views/attendance_history_page.dart';
+import 'package:hash_micro_presence_test/features/attendance/presentation/views/attendance_page.dart';
 import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:hash_micro_presence_test/features/auth/presentation/views/login_page.dart';
 import 'package:hash_micro_presence_test/features/auth/presentation/views/splash_page.dart';
@@ -64,9 +67,19 @@ class AppRouter {
         path: Routes.attendance,
         name: Routes.attendance,
         pageBuilder: (context, state) => MaterialPage(
-          child: BlocProvider.value(
-            value: sl<AuthCubit>(),
-            child: const AttendancePlaceholderPage(),
+          child: BlocProvider(
+            create: (_) => sl<AttendanceCubit>()..loadLocations(),
+            child: const AttendancePage(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: Routes.attendanceHistory,
+        name: Routes.attendanceHistory,
+        pageBuilder: (context, state) => MaterialPage(
+          child: BlocProvider(
+            create: (_) => sl<AttendanceHistoryCubit>()..loadHistory(),
+            child: const AttendanceHistoryPage(),
           ),
         ),
       ),
