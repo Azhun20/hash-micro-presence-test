@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
-import 'package:skeleton_app/features/auth/di/auth_di.dart';
-import 'package:skeleton_app/utils/services/api_service.dart';
-import 'package:skeleton_app/utils/services/hive_service.dart';
+import 'package:hash_micro_presence_test/features/auth/di/auth_di.dart';
+import 'package:hash_micro_presence_test/utils/services/api_service.dart';
+import 'package:hash_micro_presence_test/utils/services/hive_service.dart';
 
 final GetIt sl = GetIt.instance;
 

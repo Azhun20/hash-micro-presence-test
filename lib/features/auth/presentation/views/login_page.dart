@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:skeleton_app/configs/routes/route.dart';
-import 'package:skeleton_app/core/extensions/context_extensions.dart';
-import 'package:skeleton_app/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:skeleton_app/shared/styles/app_font_style.dart';
+import 'package:hash_micro_presence_test/configs/routes/route.dart';
+import 'package:hash_micro_presence_test/core/extensions/context_extensions.dart';
+import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:hash_micro_presence_test/shared/styles/app_font_style.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

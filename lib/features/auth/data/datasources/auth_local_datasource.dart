@@ -1,5 +1,5 @@
-import 'package:skeleton_app/constants/hive_constant.dart';
-import 'package:skeleton_app/utils/services/hive_service.dart';
+import 'package:hash_micro_presence_test/constants/hive_constant.dart';
+import 'package:hash_micro_presence_test/utils/services/hive_service.dart';
 
 abstract class AuthLocalDataSource {
   Future<void> saveUser(Map<String, dynamic> user);

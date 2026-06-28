@@ -1,6 +1,6 @@
 {
-    "name": "skeleton_app",
-    "short_name": "skeleton_app",
+    "name": "Hash Micro Presence Test",
+    "short_name": "Hash Micro Presence Test",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

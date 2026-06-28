@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:skeleton_app/core/error/failure.dart';
-import 'package:skeleton_app/features/auth/domain/entities/user_entity.dart';
+import 'package:hash_micro_presence_test/core/error/failure.dart';
+import 'package:hash_micro_presence_test/features/auth/domain/entities/user_entity.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, UserEntity>> login(String email, String password);

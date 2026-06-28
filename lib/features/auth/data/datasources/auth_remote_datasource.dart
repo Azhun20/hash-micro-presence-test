@@ -1,5 +1,5 @@
-import 'package:skeleton_app/constants/api_constant.dart';
-import 'package:skeleton_app/utils/services/api_service.dart';
+import 'package:hash_micro_presence_test/constants/api_constant.dart';
+import 'package:hash_micro_presence_test/utils/services/api_service.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Map<String, dynamic>> login(String email, String password);

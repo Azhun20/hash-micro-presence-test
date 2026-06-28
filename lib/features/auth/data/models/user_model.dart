@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:skeleton_app/features/auth/domain/entities/user_entity.dart';
+import 'package:hash_micro_presence_test/features/auth/domain/entities/user_entity.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "skeleton_app" "\0"
+            VALUE "FileDescription", "Hash Micro Presence Test" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "skeleton_app" "\0"
+            VALUE "InternalName", "hash_micro_presence_test" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "skeleton_app.exe" "\0"
-            VALUE "ProductName", "skeleton_app" "\0"
+            VALUE "OriginalFilename", "hash_micro_presence_test.exe" "\0"
+            VALUE "ProductName", "Hash Micro Presence Test" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

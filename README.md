@@ -1,4 +1,4 @@
-# Flutter Skeleton App
+# Hash Micro Presence Test
 
 A production-ready Flutter skeleton application built with **Clean Architecture** and modern best practices. This project serves as a solid starting foundation for building scalable, maintainable Flutter applications.
 
@@ -130,7 +130,7 @@ LoginPage → AuthCubit → LoginUseCase → AuthRepository
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd skeleton_app
+cd hash-micro-presence-test
 
 # Install dependencies
 flutter pub get

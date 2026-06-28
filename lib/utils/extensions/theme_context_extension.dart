@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:skeleton_app/shared/styles/app_font_style.dart';
-import 'package:skeleton_app/shared/styles/color_style.dart';
+import 'package:hash_micro_presence_test/shared/styles/app_font_style.dart';
+import 'package:hash_micro_presence_test/shared/styles/color_style.dart';
 
 /// ThemeContextExtension
 ///

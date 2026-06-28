@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:skeleton_app/core/logging/app_logger.dart';
-import 'package:skeleton_app/utils/services/hive_service.dart';
+import 'package:hash_micro_presence_test/core/logging/app_logger.dart';
+import 'package:hash_micro_presence_test/utils/services/hive_service.dart';
 
 /// Service for making API requests with automatic token handling
 class ApiService {

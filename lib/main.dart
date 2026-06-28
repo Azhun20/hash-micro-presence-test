@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skeleton_app/app/router/app_router.dart';
-import 'package:skeleton_app/configs/themes/theme.dart';
-import 'package:skeleton_app/core/di/service_locator.dart';
-import 'package:skeleton_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:hash_micro_presence_test/app/router/app_router.dart';
+import 'package:hash_micro_presence_test/configs/themes/theme.dart';
+import 'package:hash_micro_presence_test/core/di/service_locator.dart';
+import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         BlocProvider.value(value: sl<AuthCubit>()),
       ],
       child: MaterialApp.router(
-        title: 'Skeleton App',
+        title: 'Hash Micro Presence Test',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         routerConfig: AppRouter.router,

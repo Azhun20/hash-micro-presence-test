@@ -1,4 +1,4 @@
-package com.example.skeleton_app
+package com.hashmicro.presence_test
 
 import io.flutter.embedding.android.FlutterActivity
 

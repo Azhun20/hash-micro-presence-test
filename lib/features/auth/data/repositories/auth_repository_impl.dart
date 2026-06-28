@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:skeleton_app/core/error/failure.dart';
-import 'package:skeleton_app/features/auth/data/datasources/auth_local_datasource.dart';
-import 'package:skeleton_app/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:skeleton_app/features/auth/data/models/user_model.dart';
-import 'package:skeleton_app/features/auth/domain/entities/user_entity.dart';
-import 'package:skeleton_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:hash_micro_presence_test/core/error/failure.dart';
+import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_local_datasource.dart';
+import 'package:hash_micro_presence_test/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:hash_micro_presence_test/features/auth/data/models/user_model.dart';
+import 'package:hash_micro_presence_test/features/auth/domain/entities/user_entity.dart';
+import 'package:hash_micro_presence_test/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
