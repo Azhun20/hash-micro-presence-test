@@ -37,11 +37,21 @@ class AttendanceCubit extends Cubit<AttendanceState> {
         );
       },
       (locations) {
-        // Keep the previously selected location if it still exists, else pick
-        // the first so the map and button are immediately usable.
-        final selected =
-            state.selectedLocation ??
-            (locations.isNotEmpty ? locations.first : null);
+        // Re-resolve the selection from the freshly loaded list so edits to a
+        // location (e.g. moved pin) are reflected instead of keeping a stale
+        // copy. Falls back to the first location.
+        LocationEntity? selected;
+        final previousId = state.selectedLocation?.id;
+        if (previousId != null) {
+          for (final location in locations) {
+            if (location.id == previousId) {
+              selected = location;
+              break;
+            }
+          }
+        }
+        selected ??= locations.isNotEmpty ? locations.first : null;
+
         emit(
           state.copyWith(
             isLoadingLocations: false,

@@ -26,6 +26,11 @@ class AttendancePage extends StatelessWidget {
         title: const Text('Absensi'),
         actions: [
           IconButton(
+            tooltip: 'Muat ulang lokasi',
+            onPressed: () => context.read<AttendanceCubit>().loadLocations(),
+            icon: const Icon(Icons.refresh),
+          ),
+          IconButton(
             tooltip: 'Riwayat',
             onPressed: () => context.push(Routes.attendanceHistory),
             icon: const Icon(Icons.history),
@@ -142,7 +147,7 @@ class _AttendanceMap extends StatelessWidget {
       ),
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
+      // Zoom controls (+/- buttons) and pinch-to-zoom are on by default.
       markers: {
         Marker(markerId: const MarkerId('pin'), position: pinLatLng),
         if (userLatLng != null)
