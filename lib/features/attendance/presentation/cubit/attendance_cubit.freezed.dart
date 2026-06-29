@@ -20,6 +20,11 @@ mixin _$AttendanceState {
   List<LocationEntity> get locations => throw _privateConstructorUsedError;
   LocationEntity? get selectedLocation => throw _privateConstructorUsedError;
   bool get isCheckingIn =>
+      throw _privateConstructorUsedError; // Waiting for the first live GPS fix.
+  bool get isLocating =>
+      throw _privateConstructorUsedError; // Continuous live distance/within-radius vs. the selected pin. Drives
+// whether the check-in button is enabled.
+  AttendanceCheck? get liveCheck =>
       throw _privateConstructorUsedError; // Successful check-in (within radius).
   AttendanceEntity? get lastRecord =>
       throw _privateConstructorUsedError; // "Too far" info — not saved, only displayed then dismissed.
@@ -43,6 +48,8 @@ abstract class $AttendanceStateCopyWith<$Res> {
       List<LocationEntity> locations,
       LocationEntity? selectedLocation,
       bool isCheckingIn,
+      bool isLocating,
+      AttendanceCheck? liveCheck,
       AttendanceEntity? lastRecord,
       AttendanceCheck? tooFarCheck,
       bool isPermissionDenied,
@@ -66,6 +73,8 @@ class _$AttendanceStateCopyWithImpl<$Res, $Val extends AttendanceState>
     Object? locations = null,
     Object? selectedLocation = freezed,
     Object? isCheckingIn = null,
+    Object? isLocating = null,
+    Object? liveCheck = freezed,
     Object? lastRecord = freezed,
     Object? tooFarCheck = freezed,
     Object? isPermissionDenied = null,
@@ -88,6 +97,14 @@ class _$AttendanceStateCopyWithImpl<$Res, $Val extends AttendanceState>
           ? _value.isCheckingIn
           : isCheckingIn // ignore: cast_nullable_to_non_nullable
               as bool,
+      isLocating: null == isLocating
+          ? _value.isLocating
+          : isLocating // ignore: cast_nullable_to_non_nullable
+              as bool,
+      liveCheck: freezed == liveCheck
+          ? _value.liveCheck
+          : liveCheck // ignore: cast_nullable_to_non_nullable
+              as AttendanceCheck?,
       lastRecord: freezed == lastRecord
           ? _value.lastRecord
           : lastRecord // ignore: cast_nullable_to_non_nullable
@@ -121,6 +138,8 @@ abstract class _$$AttendanceStateImplCopyWith<$Res>
       List<LocationEntity> locations,
       LocationEntity? selectedLocation,
       bool isCheckingIn,
+      bool isLocating,
+      AttendanceCheck? liveCheck,
       AttendanceEntity? lastRecord,
       AttendanceCheck? tooFarCheck,
       bool isPermissionDenied,
@@ -142,6 +161,8 @@ class __$$AttendanceStateImplCopyWithImpl<$Res>
     Object? locations = null,
     Object? selectedLocation = freezed,
     Object? isCheckingIn = null,
+    Object? isLocating = null,
+    Object? liveCheck = freezed,
     Object? lastRecord = freezed,
     Object? tooFarCheck = freezed,
     Object? isPermissionDenied = null,
@@ -164,6 +185,14 @@ class __$$AttendanceStateImplCopyWithImpl<$Res>
           ? _value.isCheckingIn
           : isCheckingIn // ignore: cast_nullable_to_non_nullable
               as bool,
+      isLocating: null == isLocating
+          ? _value.isLocating
+          : isLocating // ignore: cast_nullable_to_non_nullable
+              as bool,
+      liveCheck: freezed == liveCheck
+          ? _value.liveCheck
+          : liveCheck // ignore: cast_nullable_to_non_nullable
+              as AttendanceCheck?,
       lastRecord: freezed == lastRecord
           ? _value.lastRecord
           : lastRecord // ignore: cast_nullable_to_non_nullable
@@ -192,6 +221,8 @@ class _$AttendanceStateImpl implements _AttendanceState {
       final List<LocationEntity> locations = const <LocationEntity>[],
       this.selectedLocation,
       this.isCheckingIn = false,
+      this.isLocating = false,
+      this.liveCheck,
       this.lastRecord,
       this.tooFarCheck,
       this.isPermissionDenied = false,
@@ -215,6 +246,14 @@ class _$AttendanceStateImpl implements _AttendanceState {
   @override
   @JsonKey()
   final bool isCheckingIn;
+// Waiting for the first live GPS fix.
+  @override
+  @JsonKey()
+  final bool isLocating;
+// Continuous live distance/within-radius vs. the selected pin. Drives
+// whether the check-in button is enabled.
+  @override
+  final AttendanceCheck? liveCheck;
 // Successful check-in (within radius).
   @override
   final AttendanceEntity? lastRecord;
@@ -229,7 +268,7 @@ class _$AttendanceStateImpl implements _AttendanceState {
 
   @override
   String toString() {
-    return 'AttendanceState(isLoadingLocations: $isLoadingLocations, locations: $locations, selectedLocation: $selectedLocation, isCheckingIn: $isCheckingIn, lastRecord: $lastRecord, tooFarCheck: $tooFarCheck, isPermissionDenied: $isPermissionDenied, errorMessage: $errorMessage)';
+    return 'AttendanceState(isLoadingLocations: $isLoadingLocations, locations: $locations, selectedLocation: $selectedLocation, isCheckingIn: $isCheckingIn, isLocating: $isLocating, liveCheck: $liveCheck, lastRecord: $lastRecord, tooFarCheck: $tooFarCheck, isPermissionDenied: $isPermissionDenied, errorMessage: $errorMessage)';
   }
 
   @override
@@ -245,6 +284,10 @@ class _$AttendanceStateImpl implements _AttendanceState {
                 other.selectedLocation == selectedLocation) &&
             (identical(other.isCheckingIn, isCheckingIn) ||
                 other.isCheckingIn == isCheckingIn) &&
+            (identical(other.isLocating, isLocating) ||
+                other.isLocating == isLocating) &&
+            (identical(other.liveCheck, liveCheck) ||
+                other.liveCheck == liveCheck) &&
             (identical(other.lastRecord, lastRecord) ||
                 other.lastRecord == lastRecord) &&
             (identical(other.tooFarCheck, tooFarCheck) ||
@@ -262,6 +305,8 @@ class _$AttendanceStateImpl implements _AttendanceState {
       const DeepCollectionEquality().hash(_locations),
       selectedLocation,
       isCheckingIn,
+      isLocating,
+      liveCheck,
       lastRecord,
       tooFarCheck,
       isPermissionDenied,
@@ -281,6 +326,8 @@ abstract class _AttendanceState implements AttendanceState {
       final List<LocationEntity> locations,
       final LocationEntity? selectedLocation,
       final bool isCheckingIn,
+      final bool isLocating,
+      final AttendanceCheck? liveCheck,
       final AttendanceEntity? lastRecord,
       final AttendanceCheck? tooFarCheck,
       final bool isPermissionDenied,
@@ -294,6 +341,11 @@ abstract class _AttendanceState implements AttendanceState {
   LocationEntity? get selectedLocation;
   @override
   bool get isCheckingIn;
+  @override // Waiting for the first live GPS fix.
+  bool get isLocating;
+  @override // Continuous live distance/within-radius vs. the selected pin. Drives
+// whether the check-in button is enabled.
+  AttendanceCheck? get liveCheck;
   @override // Successful check-in (within radius).
   AttendanceEntity? get lastRecord;
   @override // "Too far" info — not saved, only displayed then dismissed.

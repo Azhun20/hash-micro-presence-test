@@ -20,6 +20,9 @@ class _FakeAttendanceRepository implements AttendanceRepository {
   Future<Either<Failure, GeoPosition>> getCurrentPosition() async => _position;
 
   @override
+  Stream<GeoPosition> watchPosition() => const Stream.empty();
+
+  @override
   Future<Either<Failure, AttendanceEntity>> saveAttendance(
     AttendanceEntity record,
   ) async {

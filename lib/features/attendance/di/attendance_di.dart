@@ -47,6 +47,8 @@ class AttendanceDI {
       () => AttendanceCubit(
         getLocationsUseCase: sl<GetLocationsUseCase>(),
         checkInUseCase: sl<CheckInUseCase>(),
+        repository: sl<AttendanceRepository>(),
+        verifyWithinRadius: sl<VerifyWithinRadiusUseCase>(),
       ),
     );
     sl.registerFactory<AttendanceHistoryCubit>(

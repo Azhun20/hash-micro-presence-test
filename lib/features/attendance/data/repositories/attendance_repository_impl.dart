@@ -24,6 +24,9 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   }
 
   @override
+  Stream<GeoPosition> watchPosition() => geoDataSource.watchPosition();
+
+  @override
   Future<Either<Failure, AttendanceEntity>> saveAttendance(
     AttendanceEntity record,
   ) async {

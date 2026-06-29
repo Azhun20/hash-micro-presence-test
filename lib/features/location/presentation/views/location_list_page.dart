@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hash_micro_presence_test/configs/routes/route.dart';
-import 'package:hash_micro_presence_test/core/di/service_locator.dart';
-import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:hash_micro_presence_test/features/auth/presentation/utils/logout_helper.dart';
 import 'package:hash_micro_presence_test/features/location/domain/entities/location_entity.dart';
 import 'package:hash_micro_presence_test/features/location/presentation/cubit/location_list_cubit.dart';
 import 'package:hash_micro_presence_test/features/location/presentation/widgets/location_card_widget.dart';
@@ -49,10 +48,7 @@ class LocationListPage extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Keluar',
-            onPressed: () {
-              sl<AuthCubit>().logout();
-              context.go(Routes.login);
-            },
+            onPressed: () => confirmLogout(context),
             icon: const Icon(Icons.logout),
           ),
         ],

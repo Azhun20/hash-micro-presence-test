@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hash_micro_presence_test/configs/routes/route.dart';
 import 'package:hash_micro_presence_test/constants/app_constant.dart';
-import 'package:hash_micro_presence_test/core/di/service_locator.dart';
 import 'package:hash_micro_presence_test/core/extensions/context_extensions.dart';
 import 'package:hash_micro_presence_test/features/attendance/presentation/cubit/attendance_cubit.dart';
+import 'package:hash_micro_presence_test/features/attendance/presentation/utils/distance_format.dart';
 import 'package:hash_micro_presence_test/features/attendance/presentation/widgets/attendance_success_card.dart';
 import 'package:hash_micro_presence_test/features/attendance/presentation/widgets/location_selector_widget.dart';
 import 'package:hash_micro_presence_test/features/attendance/presentation/widgets/too_far_info_widget.dart';
-import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:hash_micro_presence_test/features/auth/presentation/utils/logout_helper.dart';
 import 'package:hash_micro_presence_test/features/location/domain/entities/location_entity.dart';
 import 'package:hash_micro_presence_test/shared/widgets/custom_button_widget.dart';
 import 'package:hash_micro_presence_test/utils/extensions/theme_context_extension.dart';
@@ -37,10 +37,7 @@ class AttendancePage extends StatelessWidget {
           ),
           IconButton(
             tooltip: 'Keluar',
-            onPressed: () {
-              sl<AuthCubit>().logout();
-              context.go(Routes.login);
-            },
+            onPressed: () => confirmLogout(context),
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -82,7 +79,7 @@ class AttendancePage extends StatelessWidget {
                           message:
                               state.errorMessage ??
                               'Izin lokasi dibutuhkan untuk absensi.',
-                          onRetry: cubit.checkIn,
+                          onRetry: cubit.retryTracking,
                         ),
                       if (state.lastRecord != null)
                         AttendanceSuccessCard(record: state.lastRecord!),
@@ -93,20 +90,7 @@ class AttendancePage extends StatelessWidget {
                           onDismiss: cubit.dismissInfo,
                         ),
                       const SizedBox(height: 16),
-                      CustomButtonWidget.filled(
-                        text: state.isCheckingIn
-                            ? 'Mengambil lokasi...'
-                            : 'Absen Sekarang',
-                        expanded: true,
-                        isLoading: state.isCheckingIn,
-                        onPressed: pin == null || state.isCheckingIn
-                            ? null
-                            : cubit.checkIn,
-                        prefixIcon: const Icon(
-                          Icons.fingerprint,
-                          color: Colors.white,
-                        ),
-                      ),
+                      _CheckInButton(state: state, onPressed: cubit.checkIn),
                     ],
                   ),
                 ),
@@ -232,6 +216,96 @@ class _PermissionBanner extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Check-in button that auto-enables only when the live GPS reading places the
+/// user inside the selected pin's radius, with helper text explaining the state.
+class _CheckInButton extends StatelessWidget {
+  const _CheckInButton({required this.state, required this.onPressed});
+
+  final AttendanceState state;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final live = state.liveCheck;
+    final canCheckIn =
+        state.selectedLocation != null &&
+        live != null &&
+        live.withinRadius &&
+        !state.isCheckingIn;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CustomButtonWidget.filled(
+          text: state.isCheckingIn ? 'Memproses...' : 'Absen Sekarang',
+          expanded: true,
+          isLoading: state.isCheckingIn,
+          onPressed: canCheckIn ? onPressed : null,
+          prefixIcon: const Icon(Icons.fingerprint, color: Colors.white),
+        ),
+        const SizedBox(height: 8),
+        _HelperText(state: state),
+      ],
+    );
+  }
+}
+
+class _HelperText extends StatelessWidget {
+  const _HelperText({required this.state});
+
+  final AttendanceState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final live = state.liveCheck;
+
+    late final IconData icon;
+    late final Color color;
+    late final String message;
+
+    if (state.selectedLocation == null) {
+      icon = Icons.info_outline;
+      color = context.neutral400;
+      message = 'Pilih lokasi terlebih dahulu.';
+    } else if (state.isPermissionDenied) {
+      icon = Icons.location_off;
+      color = context.warning700;
+      message = 'Aktifkan izin lokasi untuk dapat melakukan absensi.';
+    } else if (live == null || state.isLocating) {
+      icon = Icons.my_location;
+      color = context.neutral400;
+      message = 'Mendeteksi lokasi Anda...';
+    } else if (live.withinRadius) {
+      icon = Icons.check_circle;
+      color = context.success700;
+      message =
+          'Anda berada dalam radius (${formatDistance(live.distanceMeters)}). '
+          'Silakan absen.';
+    } else {
+      icon = Icons.location_searching;
+      color = context.warning700;
+      message =
+          'Anda ${formatDistance(live.distanceMeters)} dari lokasi. '
+          'Mendekatlah hingga ≤ ${live.radiusMeters.toStringAsFixed(0)} m '
+          'agar tombol aktif.';
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            message,
+            style: context.caption2Regular.copyWith(color: color),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -8,6 +8,9 @@ abstract class AttendanceRepository {
   /// geolocator wrapper.
   Future<Either<Failure, GeoPosition>> getCurrentPosition();
 
+  /// Continuous GPS stream for live distance tracking.
+  Stream<GeoPosition> watchPosition();
+
   Future<Either<Failure, AttendanceEntity>> saveAttendance(
     AttendanceEntity record,
   );
