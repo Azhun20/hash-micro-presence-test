@@ -18,13 +18,31 @@ class LocationFormPage extends StatefulWidget {
 class _LocationFormPageState extends State<LocationFormPage> {
   final _nameController = TextEditingController();
   final _addressController = TextEditingController();
+  final _sheetController = DraggableScrollableController();
   bool _controllersInitialized = false;
+  bool _wasKeyboardOpen = false;
 
   @override
   void dispose() {
     _nameController.dispose();
     _addressController.dispose();
+    _sheetController.dispose();
     super.dispose();
+  }
+
+  /// Expand the sheet to its full size when the keyboard opens so the focused
+  /// field is never hidden behind it, and collapse back to the default size
+  /// when the keyboard closes.
+  void _handleKeyboard(bool isKeyboardOpen) {
+    if (isKeyboardOpen == _wasKeyboardOpen) return;
+    _wasKeyboardOpen = isKeyboardOpen;
+    if (!_sheetController.isAttached) return;
+
+    _sheetController.animateTo(
+      isKeyboardOpen ? 0.92 : 0.5,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
   }
 
   /// Seed text controllers once when edit data arrives.
@@ -68,14 +86,22 @@ class _LocationFormPageState extends State<LocationFormPage> {
             hasCoordinates &&
             !state.isSubmitting;
 
+        final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+        final isKeyboardOpen = keyboardInset > 0;
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _handleKeyboard(isKeyboardOpen),
+        );
+
         return Scaffold(
+          // The map fills the screen; the form lives in a draggable sheet that
+          // grows for the keyboard instead of squashing the map.
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: Text(state.isEditMode ? 'Edit Lokasi' : 'Tambah Lokasi'),
           ),
-          body: Column(
+          body: Stack(
             children: [
-              SizedBox(
-                height: context.screenHeight * 0.42,
+              Positioned.fill(
                 child: LocationMapPickerWidget(
                   latitude: state.latitude,
                   longitude: state.longitude,
@@ -86,84 +112,137 @@ class _LocationFormPageState extends State<LocationFormPage> {
                   onUseCurrentLocation: cubit.useCurrentLocation,
                 ),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (state.isPermissionDenied) ...[
-                        PermissionDeniedWidget(
-                          message:
-                              state.errorMessage ??
-                              'Izin lokasi dibutuhkan untuk menandai titik.',
-                          onRetry: cubit.useCurrentLocation,
+              DraggableScrollableSheet(
+                controller: _sheetController,
+                minChildSize: 0.28,
+                maxChildSize: 0.92,
+                snap: true,
+                snapSizes: const [0.55, 0.92],
+                builder: (context, scrollController) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: context.colorScheme.surface,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.neutral900.withValues(alpha: 0.1),
+                          blurRadius: 16,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: ListView(
+                      controller: scrollController,
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        8,
+                        16,
+                        20 + keyboardInset,
+                      ),
+                      children: [
+                        const _SheetGrabHandle(),
+                        if (state.isPermissionDenied) ...[
+                          PermissionDeniedWidget(
+                            message:
+                                state.errorMessage ??
+                                'Izin lokasi dibutuhkan untuk menandai titik.',
+                            onRetry: cubit.useCurrentLocation,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        _CoordinateChip(
+                          latitude: state.latitude,
+                          longitude: state.longitude,
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                          controller: _nameController,
+                          textCapitalization: TextCapitalization.words,
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Nama Lokasi',
+                            hintText: 'mis. Kantor Pusat',
+                            prefixIcon: Icon(Icons.business),
+                          ),
+                          onChanged: cubit.onNameChanged,
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                          controller: _addressController,
+                          maxLines: 2,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: const InputDecoration(
+                            labelText: 'Alamat (opsional)',
+                            prefixIcon: Icon(Icons.place_outlined),
+                          ),
+                          onChanged: cubit.onAddressChanged,
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Radius Absensi',
+                              style: context.body2SemiBold,
+                            ),
+                            Text(
+                              '${state.radiusMeters.toStringAsFixed(0)} m',
+                              style: context.body2SemiBold.copyWith(
+                                color: context.primary500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Slider(
+                          value: state.radiusMeters.clamp(10, 200),
+                          min: 10,
+                          max: 200,
+                          divisions: 38,
+                          label: '${state.radiusMeters.toStringAsFixed(0)} m',
+                          onChanged: cubit.onRadiusChanged,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomButtonWidget.filled(
+                          text: state.isEditMode
+                              ? 'Simpan Perubahan'
+                              : 'Simpan Lokasi',
+                          expanded: true,
+                          isLoading: state.isSubmitting,
+                          onPressed: canSubmit ? cubit.submit : null,
                         ),
                         const SizedBox(height: 16),
                       ],
-                      _CoordinateChip(
-                        latitude: state.latitude,
-                        longitude: state.longitude,
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _nameController,
-                        textCapitalization: TextCapitalization.words,
-                        decoration: const InputDecoration(
-                          labelText: 'Nama Lokasi',
-                          hintText: 'mis. Kantor Pusat',
-                          prefixIcon: Icon(Icons.business),
-                        ),
-                        onChanged: cubit.onNameChanged,
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _addressController,
-                        maxLines: 2,
-                        decoration: const InputDecoration(
-                          labelText: 'Alamat (opsional)',
-                          prefixIcon: Icon(Icons.place_outlined),
-                        ),
-                        onChanged: cubit.onAddressChanged,
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Radius Absensi', style: context.body2SemiBold),
-                          Text(
-                            '${state.radiusMeters.toStringAsFixed(0)} m',
-                            style: context.body2SemiBold.copyWith(
-                              color: context.primary500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Slider(
-                        value: state.radiusMeters.clamp(10, 200),
-                        min: 10,
-                        max: 200,
-                        divisions: 38,
-                        label: '${state.radiusMeters.toStringAsFixed(0)} m',
-                        onChanged: cubit.onRadiusChanged,
-                      ),
-                      const SizedBox(height: 16),
-                      CustomButtonWidget.filled(
-                        text: state.isEditMode
-                            ? 'Simpan Perubahan'
-                            : 'Simpan Lokasi',
-                        expanded: true,
-                        isLoading: state.isSubmitting,
-                        onPressed: canSubmit ? cubit.submit : null,
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _SheetGrabHandle extends StatelessWidget {
+  const _SheetGrabHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 40,
+        height: 4,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: context.neutral50,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
     );
   }
 }

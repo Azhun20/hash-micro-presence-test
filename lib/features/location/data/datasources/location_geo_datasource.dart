@@ -8,11 +8,41 @@ abstract class LocationGeoDataSource {
   /// `PermissionDeniedException` when the user denies (or permanently denies)
   /// location permission. Both are mapped to a `LocationFailure` upstream.
   Future<GeoPosition> getCurrentPosition();
+
+  /// Continuous stream of high-accuracy GPS positions for live tracking.
+  /// Ensures permission/service first (errors propagate on the stream).
+  Stream<GeoPosition> watchPosition();
 }
 
 class LocationGeoDataSourceImpl implements LocationGeoDataSource {
   @override
   Future<GeoPosition> getCurrentPosition() async {
+    await _ensurePermission();
+
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    );
+
+    return _toGeoPosition(position);
+  }
+
+  @override
+  Stream<GeoPosition> watchPosition() async* {
+    await _ensurePermission();
+
+    yield* Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 2, // emit on ~2 m movement
+      ),
+    ).map(_toGeoPosition);
+  }
+
+  /// Ensures location service is on and permission is granted, throwing the
+  /// geolocator exceptions that map to a LocationFailure upstream.
+  Future<void> _ensurePermission() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw const LocationServiceDisabledException();
@@ -31,13 +61,9 @@ class LocationGeoDataSourceImpl implements LocationGeoDataSource {
         'Izin lokasi ditolak permanen. Aktifkan dari pengaturan aplikasi.',
       );
     }
+  }
 
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
-    );
-
+  GeoPosition _toGeoPosition(Position position) {
     return GeoPosition(
       latitude: position.latitude,
       longitude: position.longitude,

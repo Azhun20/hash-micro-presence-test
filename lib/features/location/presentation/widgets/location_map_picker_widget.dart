@@ -70,7 +70,7 @@ class _LocationMapPickerWidgetState extends State<LocationMapPickerWidget> {
           onMapCreated: (controller) => _controller = controller,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
+          // Zoom controls (+/- buttons) and pinch-to-zoom are on by default.
           onTap: (pos) => widget.onPinMoved(pos.latitude, pos.longitude),
           markers: hasPin
               ? {
@@ -97,8 +97,10 @@ class _LocationMapPickerWidgetState extends State<LocationMapPickerWidget> {
               : {},
         ),
         Positioned(
-          right: 12,
-          bottom: 12,
+          // Top-left so it stays visible above the draggable form sheet and
+          // clear of the map's zoom controls (bottom-right).
+          left: 12,
+          top: 12,
           child: FloatingActionButton.extended(
             heroTag: 'useCurrentLocation',
             onPressed: widget.isLocating ? null : widget.onUseCurrentLocation,

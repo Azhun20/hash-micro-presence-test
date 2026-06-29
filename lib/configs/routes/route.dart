@@ -13,6 +13,7 @@ class Routes {
   static const String locations = '/locations';
   static const String locationForm = '/locations/form';
 
-  // Attendance routes (user) — placeholder until Plan 2.
+  // Attendance routes (user)
   static const String attendance = '/attendance';
+  static const String attendanceHistory = '/attendance/history';
 }

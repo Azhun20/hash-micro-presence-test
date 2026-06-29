@@ -4,9 +4,13 @@ import 'package:hash_micro_presence_test/app/router/app_router.dart';
 import 'package:hash_micro_presence_test/configs/themes/theme.dart';
 import 'package:hash_micro_presence_test/core/di/service_locator.dart';
 import 'package:hash_micro_presence_test/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Locale data for Indonesian date/time formatting (history view).
+  await initializeDateFormatting('id_ID');
 
   // Setup dependency injection
   await setupServiceLocator();
