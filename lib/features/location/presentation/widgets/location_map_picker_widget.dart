@@ -97,9 +97,10 @@ class _LocationMapPickerWidgetState extends State<LocationMapPickerWidget> {
               : {},
         ),
         Positioned(
-          // Bottom-left so it doesn't overlap the map's zoom controls (right).
+          // Top-left so it stays visible above the draggable form sheet and
+          // clear of the map's zoom controls (bottom-right).
           left: 12,
-          bottom: 12,
+          top: 12,
           child: FloatingActionButton.extended(
             heroTag: 'useCurrentLocation',
             onPressed: widget.isLocating ? null : widget.onUseCurrentLocation,

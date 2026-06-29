@@ -133,7 +133,9 @@ class LocationFormCubit extends Cubit<LocationFormState> {
     result.fold(
       (failure) {
         AppLogger.error('Save location failed', failure.message);
-        emit(state.copyWith(isSubmitting: false, errorMessage: failure.message));
+        emit(
+          state.copyWith(isSubmitting: false, errorMessage: failure.message),
+        );
       },
       (saved) {
         AppLogger.info('Location saved: ${saved.name}');
